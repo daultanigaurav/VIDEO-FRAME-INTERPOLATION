@@ -62,17 +62,72 @@ When converting to a full GAN:
 
 ## Installation
 
-1. **Clone or navigate to the project directory**
+### Python Version
 
-2. **Create a virtual environment** (recommended):
+Use **Python 3.10 or newer**.
+
+### Clean Virtual Environment Setup
+
+1. **Navigate to the project directory**:
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+cd VIDEO-FRAME-INTERPOLATION/AI-FRAME-INTERPOLATION
 ```
 
-3. **Install dependencies**:
+2. **Create a fresh virtual environment**:
+```bash
+python -m venv .venv
+```
+
+3. **Activate the environment**:
+
+- **Windows (PowerShell)**
+```bash
+.venv\Scripts\Activate.ps1
+```
+
+- **Windows (cmd)**
+```bash
+.venv\Scripts\activate.bat
+```
+
+- **macOS/Linux**
+```bash
+source .venv/bin/activate
+```
+
+4. **Upgrade packaging tools**:
+```bash
+python -m pip install --upgrade pip setuptools wheel
+```
+
+5. **Install dependencies**:
+
+- For **runtime only** (app/CLI):
 ```bash
 pip install -r requirements.txt
+```
+
+- For **development/notebooks**:
+```bash
+pip install -r requirements-dev.txt
+```
+
+6. **(Optional) Verify environment**:
+```bash
+python --version
+pip list
+```
+
+### Run the Project
+
+- **Streamlit app**
+```bash
+streamlit run app.py
+```
+
+- **CLI demo generation**
+```bash
+python src/create_demo_video.py --input_frames frame1.jpg frame2.jpg --output output_video.mp4
 ```
 
 ## Usage

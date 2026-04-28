@@ -1,0 +1,12 @@
+# Development dependencies (includes runtime deps)
+-r requirements.txt
+
+# Notebooks and experimentation
+jupyter==1.0.0
+notebook==7.2.0
+ipykernel==6.29.4
+
+# Utility packages used in demos/experiments
+tqdm==4.66.4
+imageio==2.34.1
+imageio-ffmpeg==0.4.9

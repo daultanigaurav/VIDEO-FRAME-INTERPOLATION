@@ -2,6 +2,7 @@ import os
 import torch
 import torch.nn as nn
 import numpy as np
+import cv2
 from typing import Optional, Tuple
 import logging
 from pathlib import Path
@@ -60,6 +61,8 @@ class CustomInterpolationModelWrapper:
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = None
         self.model_path = model_path or self._get_default_model_path()
+        self.using_fallback = False
+        self.model_warning = None
         self._load_model()
     
     def _get_default_model_path(self) -> str:
@@ -78,23 +81,55 @@ class CustomInterpolationModelWrapper:
                     self.model.load_state_dict(torch.load(self.model_path, map_location=self.device))
                     logger.info(f"Successfully loaded trained model weights from {self.model_path}")
                 except Exception as e:
+                    self.using_fallback = True
+                    self.model_warning = (
+                        "Could not load trained_model.pth. "
+                        "Using deterministic blending fallback for stable output quality."
+                    )
                     logger.warning(f"Could not load trained weights: {e}")
-                    logger.info("Using randomly initialized weights (model not trained yet)")
             else:
+                self.using_fallback = True
+                self.model_warning = (
+                    "trained_model.pth not found. "
+                    "Using deterministic blending fallback for stable output quality."
+                )
                 logger.warning(f"Model weights not found at {self.model_path}")
-                logger.info("Using randomly initialized weights. Train the model first using model_train.py")
             
             self.model.eval()
+            if self.using_fallback and self.model_warning:
+                logger.warning(self.model_warning)
             
         except Exception as e:
             logger.error(f"Error loading custom model: {e}")
             raise
+
+    def get_status(self) -> dict:
+        return {
+            "mode": "fallback_blending" if self.using_fallback else "trained_model",
+            "has_trained_weights": not self.using_fallback,
+            "warning": self.model_warning,
+        }
+
+    def _deterministic_interpolate(
+        self,
+        frame1_norm: np.ndarray,
+        frame2_norm: np.ndarray,
+        alpha: float
+    ) -> np.ndarray:
+        blended = (1 - alpha) * frame1_norm + alpha * frame2_norm
+        # Mild unsharp mask keeps blended frames from looking too soft.
+        blurred = cv2.GaussianBlur(blended, (0, 0), sigmaX=1.0, sigmaY=1.0)
+        enhanced = np.clip(blended + 0.2 * (blended - blurred), 0.0, 1.0)
+        return np.clip(enhanced * 255.0, 0, 255).astype(np.uint8)
     
     def interpolate(self, frame1: np.ndarray, frame2: np.ndarray, alpha: float = 0.5) -> np.ndarray:
-        self.model.eval()
-        
         f1 = frame1.astype(np.float32) / 255.0
         f2 = frame2.astype(np.float32) / 255.0
+
+        if self.using_fallback:
+            return self._deterministic_interpolate(f1, f2, alpha)
+
+        self.model.eval()
         
         f1_tensor = torch.from_numpy(f1).permute(2, 0, 1).unsqueeze(0).to(self.device)
         f2_tensor = torch.from_numpy(f2).permute(2, 0, 1).unsqueeze(0).to(self.device)

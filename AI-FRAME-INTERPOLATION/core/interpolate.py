@@ -42,6 +42,7 @@ def interpolate_frames(
     
     logger.info("Loading custom trained interpolation model...")
     model = load_model()
+    model_status = model.get_status() if hasattr(model, "get_status") else {}
     
     logger.info(f"Generating {num_interpolations} intermediate frames...")
     all_frames = [frame1.copy()]
@@ -86,7 +87,9 @@ def interpolate_frames(
         "avg_frame_time": avg_frame_time,
         "fps": fps,
         "resolution": resolution,
-        "model": "custom_trained"
+        "model": model_status.get("mode", "custom_trained"),
+        "model_warning": model_status.get("warning"),
+        "has_trained_weights": model_status.get("has_trained_weights", True),
     }
     
     logger.info(f"Interpolation complete! Total time: {total_time:.2f}s")
@@ -116,6 +119,7 @@ def interpolate_video(
     ensure_dir(output_dir)
     
     model = load_model()
+    model_status = model.get_status() if hasattr(model, "get_status") else {}
     
     all_interpolated_frames = []
     interpolation_times = []
@@ -162,7 +166,9 @@ def interpolate_video(
         "avg_frame_time": avg_frame_time,
         "fps": fps,
         "resolution": resolution,
-        "model": "custom_trained"
+        "model": model_status.get("mode", "custom_trained"),
+        "model_warning": model_status.get("warning"),
+        "has_trained_weights": model_status.get("has_trained_weights", True),
     }
     
     return video_path, preview_video_path, metrics

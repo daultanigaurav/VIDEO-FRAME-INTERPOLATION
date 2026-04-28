@@ -126,7 +126,7 @@ def main():
                     frame1_bytes = frame1_file.read()
                     frame1_np = np.frombuffer(frame1_bytes, np.uint8)
                     frame1_img = cv2.imdecode(frame1_np, cv2.IMREAD_COLOR)
-                    st.image(cv2.cvtColor(frame1_img, cv2.COLOR_BGR2RGB), caption="Frame 1", use_container_width=True)
+                    st.image(cv2.cvtColor(frame1_img, cv2.COLOR_BGR2RGB), caption="Frame 1", use_column_width=True)
             
             with col2:
                 st.subheader("Frame 2")
@@ -139,7 +139,7 @@ def main():
                     frame2_bytes = frame2_file.read()
                     frame2_np = np.frombuffer(frame2_bytes, np.uint8)
                     frame2_img = cv2.imdecode(frame2_np, cv2.IMREAD_COLOR)
-                    st.image(cv2.cvtColor(frame2_img, cv2.COLOR_BGR2RGB), caption="Frame 2", use_container_width=True)
+                    st.image(cv2.cvtColor(frame2_img, cv2.COLOR_BGR2RGB), caption="Frame 2", use_column_width=True)
             
             if st.button("🚀 Generate Interpolated Video", type="primary", use_container_width=True):
                 if frame1_file and frame2_file:
@@ -183,6 +183,8 @@ def main():
                             status_text.text("Complete!")
                             
                             st.success("✅ Interpolation complete!")
+                            if metrics.get("model_warning"):
+                                st.warning(f"⚠️ {metrics['model_warning']}")
                             
                             if os.path.exists(video_path):
                                 if 'video_download_bytes' not in st.session_state:
@@ -225,7 +227,7 @@ def main():
                                                     interp_num = frame_idx
                                                     caption = f"✨ Interpolated Frame {interp_num}"
                                                 
-                                                st.image(frame_rgb, caption=caption, use_container_width=True)
+                                                st.image(frame_rgb, caption=caption, use_column_width=True)
                                                 
                                                 frame_key = f"frame_bytes_{frame_idx}"
                                                 if frame_key not in st.session_state:
@@ -258,7 +260,7 @@ def main():
                                                 frame_rgb = cv2.cvtColor(display_frames[actual_frame_idx], cv2.COLOR_BGR2RGB)
                                                 
                                                 caption = f"✨ Interpolated Frame {interp_idx + 1} of {num_interp}"
-                                                st.image(frame_rgb, caption=caption, use_container_width=True)
+                                                st.image(frame_rgb, caption=caption, use_column_width=True)
                                                 
                                                 interp_frame_key = f"interp_frame_bytes_{interp_idx}"
                                                 if interp_frame_key not in st.session_state:
@@ -328,6 +330,8 @@ def main():
                             status_text.text("Complete!")
                             
                             st.success("✅ Video processing complete!")
+                            if metrics.get("model_warning"):
+                                st.warning(f"⚠️ {metrics['model_warning']}")
                             
                             if os.path.exists(video_output_path):
                                 if 'video_upload_download_bytes' not in st.session_state:
@@ -425,7 +429,7 @@ def main():
                 if len(frames) >= 2:
                     st.subheader("Optical Flow Visualization")
                     flow_vis = calculate_optical_flow(frames[0], frames[-1])
-                    st.image(cv2.cvtColor(flow_vis, cv2.COLOR_BGR2RGB), use_container_width=True)
+                    st.image(cv2.cvtColor(flow_vis, cv2.COLOR_BGR2RGB), use_column_width=True)
         else:
             st.info("👆 Generate a video first to see metrics and analysis.")
     
