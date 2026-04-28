@@ -27,10 +27,10 @@ def interpolate_frames(
     
     project_root = get_project_root()
     if output_dir is None:
-        output_dir = os.path.join(project_root, "output", "interpolated_frames")
+        output_dir = os.path.join(project_root, "outputs", "frames")
     ensure_dir(output_dir)
     
-    preview_dir = os.path.join(project_root, "output", "previews")
+    preview_dir = os.path.join(project_root, "outputs", "frames", "previews")
     ensure_dir(preview_dir)
     
     logger.info(f"Loading frames: {frame1_path} and {frame2_path}")
@@ -69,7 +69,7 @@ def interpolate_frames(
     all_frames.append(frame2.copy())
     
     logger.info("Creating output video...")
-    video_output_dir = os.path.join(os.path.dirname(output_dir), "..")
+    video_output_dir = os.path.join(project_root, "outputs", "videos")
     video_path = os.path.join(video_output_dir, "output_video.mp4")
     preview_video_path = os.path.join(preview_dir, "output_video.mp4")
     ensure_dir(os.path.dirname(video_path))
@@ -115,7 +115,7 @@ def interpolate_video(
     
     if output_dir is None:
         project_root = get_project_root()
-        output_dir = os.path.join(project_root, "output", "interpolated_frames")
+        output_dir = os.path.join(project_root, "outputs", "frames")
     ensure_dir(output_dir)
     
     model = load_model()
@@ -145,10 +145,11 @@ def interpolate_video(
     
     all_interpolated_frames.append(resize_image(frames[-1], resolution))
     
-    preview_dir = os.path.join(get_project_root(), "output", "previews")
+    project_root = get_project_root()
+    preview_dir = os.path.join(project_root, "outputs", "frames", "previews")
     ensure_dir(preview_dir)
     
-    video_output_dir = os.path.join(os.path.dirname(output_dir), "..")
+    video_output_dir = os.path.join(project_root, "outputs", "videos")
     video_path = os.path.join(video_output_dir, "output_video.mp4")
     preview_video_path = os.path.join(preview_dir, "output_video.mp4")
     ensure_dir(os.path.dirname(video_path))

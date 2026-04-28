@@ -23,6 +23,7 @@ wheels/
 # Virtual Environment
 venv/
 .venv/
+.venv_smoke/
 env/
 ENV/
 env.bak/
@@ -42,13 +43,24 @@ venv.bak/
 # Project specific
 output/
 outputs/
+outputs/**
+!outputs/.gitkeep
+!outputs/videos/.gitkeep
+!outputs/frames/.gitkeep
+!outputs/temp/.gitkeep
 models/*.pth
 models/*.pkl
 *.mp4
 *.avi
 *.mov
 data/
+data/**
+!data/.gitkeep
+!data/sample_frames/.gitkeep
+!data/sample_videos/.gitkeep
 *.log
+*.tmp
+*.temp
 
 # OS
 Thumbs.db

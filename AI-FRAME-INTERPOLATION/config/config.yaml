@@ -1,0 +1,12 @@
+app:
+  title: "AI Frame Interpolation System"
+  default_fps: 1
+  default_resolution:
+    width: 1280
+    height: 720
+
+paths:
+  model_weights: "models/trained_model.pth"
+  outputs_root: "outputs"
+  videos_dir: "outputs/videos"
+  frames_dir: "outputs/frames"
